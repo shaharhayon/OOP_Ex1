@@ -136,7 +136,7 @@ public class WGraph_DS implements weighted_graph, Serializable {
     @Override
     public void connect(int node1, int node2, double w) {
         if (this.nodes_list.get(node1) == null || this.nodes_list.get(node2) == null) {
-            System.out.println("One of the nodes does not exist.");
+            //System.out.println("One of the nodes does not exist.");
             return;
         }
         this.neighbors.get(node1).put(getNode(node2), w);
