@@ -1,5 +1,6 @@
 import ex1.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +42,12 @@ class WGraph_AlgoTest {
         assertAll(
                 () -> {
                     wga.init(g);
-                    assertTrue(wga.getGraph() == g, "Initiated graph should be g");
+                    assertSame(wga.getGraph(), g, "Initiated graph should be g");
                 },
 
                 () -> {
                     wga.init(null);
-                    assertTrue(wga.getGraph() == null, "Initiated graph should be null");
+                    assertNull(wga.getGraph(), "Initiated graph should be null");
                 }
         );
 
@@ -54,7 +55,7 @@ class WGraph_AlgoTest {
 
     @Test
     void getGraph() {
-        assertTrue(wga.getGraph() == g);
+        assertTrue(g.equals(wga.getGraph()));
     }
 
     @Test
@@ -70,11 +71,11 @@ class WGraph_AlgoTest {
                 () -> assertTrue(wga.isConnected(), "Graph should be connected"),
                 () -> {
                     wga.getGraph().removeEdge(500, 501);
+                    System.out.println(wga.getGraph().hasEdge(500,501));
+                    System.out.println(wga.getGraph().hasEdge(501,502));
                     assertFalse(wga.isConnected(), "Graph should not be connected");
                 }
         );
-
-
     }
 
     @Test

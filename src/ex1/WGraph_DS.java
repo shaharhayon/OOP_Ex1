@@ -67,6 +67,21 @@ public class WGraph_DS implements weighted_graph, Serializable {
                     ", info = " + info +
                     "]\t";
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof NodeData)) return false;
+            NodeData nodeData = (NodeData) o;
+            return this.key == nodeData.key &&
+                    Double.compare(nodeData.tag, tag) == 0 &&
+                    this.info.equals(nodeData.info);
+        }
+
+        @Override
+        public int hashCode() {
+            return this.key % 50;
+        }
     }
 
 
@@ -94,8 +109,8 @@ public class WGraph_DS implements weighted_graph, Serializable {
     // if true returns true, else returns false.
     @Override
     public boolean hasEdge(int node1, int node2) {
-        node_info nodeB = this.getNode(node2);
-        if (neighbors.get(node1).containsKey(nodeB))
+        node_info nodeB = nodes_list.get(node2);
+        if (this.neighbors.get(node1).containsKey(nodeB))
             return true;
         else
             return false;
@@ -104,7 +119,7 @@ public class WGraph_DS implements weighted_graph, Serializable {
     @Override
     public double getEdge(int node1, int node2) {
         if (hasEdge(node1, node2))
-            return neighbors.get(node1).get(getNode(node2));
+            return this.neighbors.get(node1).get(getNode(node2));
         else
             return -1;
     }
@@ -175,5 +190,20 @@ public class WGraph_DS implements weighted_graph, Serializable {
     @Override
     public int getMC() {
         return this.MC;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WGraph_DS)) return false;
+        WGraph_DS wGraph_ds = (WGraph_DS) o;
+        return edges == wGraph_ds.edges &&
+                Objects.equals(nodes_list, wGraph_ds.nodes_list) &&
+                Objects.equals(neighbors, wGraph_ds.neighbors);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, MC, edges, nodes_list, neighbors);
     }
 }
