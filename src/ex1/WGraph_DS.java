@@ -1,9 +1,7 @@
 package ex1;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 public class WGraph_DS implements weighted_graph, Serializable {
     int id = 0, MC = 0, edges = 0;
@@ -135,7 +133,9 @@ public class WGraph_DS implements weighted_graph, Serializable {
 
     @Override
     public void connect(int node1, int node2, double w) {
-        if (this.nodes_list.get(node1) == null || this.nodes_list.get(node2) == null) {
+        if (this.nodes_list.get(node1) == null ||
+                this.nodes_list.get(node2) == null ||
+                hasEdge(node1, node2)) {
             //System.out.println("One of the nodes does not exist.");
             return;
         }
@@ -160,10 +160,14 @@ public class WGraph_DS implements weighted_graph, Serializable {
         if (getNode(key) == null)
             return null;
 
+        List<Integer> toRemove = new ArrayList<>();
         node_info removedNode = getNode(key);
-        for (node_info n : this.neighbors.get(removedNode).keySet()) {
-            removeEdge(n.getKey(), key);
+        for (node_info n : getV(key)) {
+            toRemove.add(n.getKey());
+            //
         }
+        for (int i : toRemove)
+            removeEdge(i, key);
         this.nodes_list.remove(key);
         return removedNode;
     }
@@ -173,6 +177,7 @@ public class WGraph_DS implements weighted_graph, Serializable {
         if (hasEdge(node1, node2)) {
             this.neighbors.get(node1).remove(getNode(node2));
             this.neighbors.get(node2).remove(getNode(node1));
+            edges--;
             MC++;
         }
     }
