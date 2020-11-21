@@ -1,10 +1,11 @@
+package ex1.tests;
+
 import ex1.src.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Assertions;
 
 class WGraph_AlgoTest_Shahar {
 
@@ -38,15 +39,15 @@ class WGraph_AlgoTest_Shahar {
 
     @Test
     void init() {
-        assertAll(
+        Assertions.assertAll(
                 () -> {
                     wga.init(g);
-                    assertSame(wga.getGraph(), g, "Initiated graph should be g");
+                    Assertions.assertSame(wga.getGraph(), g, "Initiated graph should be g");
                 },
 
                 () -> {
                     wga.init(null);
-                    assertNull(wga.getGraph(), "Initiated graph should be null");
+                    Assertions.assertNull(wga.getGraph(), "Initiated graph should be null");
                 }
         );
 
@@ -54,25 +55,25 @@ class WGraph_AlgoTest_Shahar {
 
     @Test
     void getGraph() {
-        assertTrue(g.equals(wga.getGraph()));
+        Assertions.assertTrue(g.equals(wga.getGraph()));
     }
 
     @Test
     void copy() {
 
-        assertTrue(g.equals(wga.copy()));
+        Assertions.assertTrue(g.equals(wga.copy()));
     }
 
     @Test
     void isConnected() {
         wga.init(createGraph(1000, 1000, 1));
-        assertAll(
-                () -> assertTrue(wga.isConnected(), "Graph should be connected"),
+        Assertions.assertAll(
+                () -> Assertions.assertTrue(wga.isConnected(), "Graph should be connected"),
                 () -> {
                     wga.getGraph().removeEdge(500, 501);
                     System.out.println(wga.getGraph().hasEdge(500,501));
                     System.out.println(wga.getGraph().hasEdge(501,502));
-                    assertFalse(wga.isConnected(), "Graph should not be connected");
+                    Assertions.assertFalse(wga.isConnected(), "Graph should not be connected");
                 }
         );
     }
@@ -80,7 +81,7 @@ class WGraph_AlgoTest_Shahar {
     @Test
     void shortestPathDist() {
         wga.init(createGraph(10, 10, 2));
-        assertEquals(9, wga.shortestPathDist(0, 9));
+        Assertions.assertEquals(9, wga.shortestPathDist(0, 9));
 
     }
 
@@ -94,19 +95,19 @@ class WGraph_AlgoTest_Shahar {
         list.add(wga.getGraph().getNode(5));
         list.add(wga.getGraph().getNode(7));
         list.add(wga.getGraph().getNode(9));
-        assertEquals(list, wga.shortestPath(0, 9));
+        Assertions.assertEquals(list, wga.shortestPath(0, 9));
     }
 
     @Test
     void save() {
-        assertTrue(wga.save("saveTest.ser"));
+        Assertions.assertTrue(wga.save("saveTest.ser"));
     }
 
     @Test
     void load() {
-        assertAll(
+        Assertions.assertAll(
                 () -> wga.load("saveTest.ser"),
-                () -> assertEquals(wga.getGraph(), g)
+                () -> Assertions.assertEquals(wga.getGraph(), g)
         );
     }
 }

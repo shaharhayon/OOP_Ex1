@@ -1,15 +1,15 @@
-//package ex1;
+package ex1.tests;
 import ex1.src.WGraph_DS;
 import ex1.src.node_info;
 import ex1.src.weighted_graph;
-import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.*;
 
 class WGraph_DSTest {
     private static Random _rnd = null;
@@ -25,7 +25,7 @@ class WGraph_DSTest {
         g.removeNode(1);
         g.removeNode(1);
         int s = g.nodeSize();
-        assertEquals(1,s);
+        Assertions.assertEquals(1,s);
 
     }
 
@@ -41,11 +41,11 @@ class WGraph_DSTest {
         g.connect(0,3,3);
         g.connect(0,1,1);
         int e_size =  g.edgeSize();
-        assertEquals(3, e_size);
+        Assertions.assertEquals(3, e_size);
         double w03 = g.getEdge(0,3);
         double w30 = g.getEdge(3,0);
-        assertEquals(w03, w30);
-        assertEquals(w03, 3);
+        Assertions.assertEquals(w03, w30);
+        Assertions.assertEquals(w03, 3);
     }
 
     @Test
@@ -63,12 +63,11 @@ class WGraph_DSTest {
         Iterator<node_info> iter = v.iterator();
         while (iter.hasNext()) {
             node_info n = iter.next();
-            assertNotNull(n);
+            Assertions.assertNotNull(n);
         }
     }
 
-    //@org.junit.jupiter.api.Test
-    //@Timeout(5000)
+    @Timeout(5000)
     @Test
     public void testRuntime() {
         int v = 100000, e = v*10;
@@ -77,7 +76,7 @@ class WGraph_DSTest {
         Collection<node_info> ni1 = g.getV(1);
         double w = g.getEdge(key, ni1.iterator().next().getKey());
         double ex = 0.0632310507;
-        assertEquals(w,ex,0.0001);
+        Assertions.assertEquals(w,ex,0.0001);
     }
 
     @Test
@@ -87,8 +86,8 @@ class WGraph_DSTest {
         for(int i=0;i<v;i++) {
             for(int j=i+1;j<v;j++) {
                 boolean b = g.hasEdge(i,j);
-                assertTrue(b);
-                assertTrue(g.hasEdge(j,i));
+                Assertions.assertTrue(b);
+                Assertions.assertTrue(g.hasEdge(j,i));
             }
         }
     }
@@ -104,11 +103,11 @@ class WGraph_DSTest {
         g.connect(0,2,2);
         g.connect(0,3,3);
         g.removeEdge(0,1);
-        assertFalse(g.hasEdge(1,0));
+        Assertions.assertFalse(g.hasEdge(1,0));
         g.removeEdge(2,1);
         g.connect(0,1,1);
         double w = g.getEdge(1,0);
-        assertEquals(w,1);
+        Assertions.assertEquals(w,1);
     }
 
 
@@ -124,10 +123,10 @@ class WGraph_DSTest {
         g.connect(0,3,3);
         g.removeNode(4);
         g.removeNode(0);
-        assertFalse(g.hasEdge(1,0));
+        Assertions.assertFalse(g.hasEdge(1,0));
         int e = g.edgeSize();
-        assertEquals(0,e);
-        assertEquals(3,g.nodeSize());
+        Assertions.assertEquals(0,e);
+        Assertions.assertEquals(3,g.nodeSize());
     }
 
     @Test
@@ -142,7 +141,7 @@ class WGraph_DSTest {
         g.connect(0,3,3);
         g.removeEdge(0,3);
         double w = g.getEdge(0,3);
-        assertEquals(w,-1);
+        Assertions.assertEquals(w,-1);
     }
 
 

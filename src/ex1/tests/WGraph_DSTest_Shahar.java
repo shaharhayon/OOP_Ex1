@@ -1,9 +1,11 @@
+package ex1.tests;
+
 import ex1.src.WGraph_DS;
 import ex1.src.weighted_graph;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class WGraph_DSTest_Shahar {
 
@@ -41,7 +43,7 @@ class WGraph_DSTest_Shahar {
 
     @Test
     void hasEdge() {
-        assertTrue(g.hasEdge(0,1));
+        Assertions.assertTrue(g.hasEdge(0,1));
     }
 
     @Test

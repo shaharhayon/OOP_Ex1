@@ -1,10 +1,10 @@
-package ex1;
+package ex1.src;
 
 import java.io.*;
 import java.util.*;
 
 public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
-    static weighted_graph G;
+    private weighted_graph G;
 
     public WGraph_Algo(weighted_graph g) {
         init(g);
@@ -44,14 +44,16 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
             byte[] byteData = bos.toByteArray();
 
             ByteArrayInputStream bis = new ByteArrayInputStream(byteData);
-            return (weighted_graph)(new ObjectInputStream(bis).readObject());
-        }
-        catch(Exception e){
+            return (weighted_graph) (new ObjectInputStream(bis).readObject());
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    /*
+    checks if the graph is connected using the method used in Ex0, using the bfs algorithm
+     */
     @Override
     public boolean isConnected() {
         // empty graph is connected.
@@ -66,19 +68,26 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
         return true;
     }
 
+    /*
+    returns the tag on the destination node, as after shortestPath runs it leaves that tag as that distance (weight)
+     */
     @Override
     public double shortestPathDist(int src, int dest) {
-        if(shortestPath(src,dest) == null)
+        if (shortestPath(src, dest) == null)
             return -1;
         return G.getNode(dest).getTag();
     }
 
+    /*
+    this function finds the shortest path between 2 nodes, using dijkstra's algorithm
+    this implementation uses a normal forEach on the graph nodes list, not a binary heap (which could improve performance)
+     */
     @Override
     public List<node_info> shortestPath(int src, int dest) {
         initDijkstra();
 
         G.getNode(src).setTag(0);
-        HashMap<node_info, node_info> parent = new HashMap<>();
+        HashMap<Integer, node_info> parent = new HashMap<>();
         for (node_info node : G.getV()) {
             for (node_info neighbor : G.getV(node.getKey())) {
                 if (neighbor.getInfo().equals("Visited"))
@@ -87,7 +96,7 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
                 double nodeWeight = node.getTag();
                 if (nodeWeight + edgeWeight < neighbor.getTag()) {
                     neighbor.setTag(nodeWeight + edgeWeight);
-                    parent.put(neighbor, node);
+                    parent.put(neighbor.getKey(), node);
                 }
             }
             node.setInfo("Visited");
@@ -102,23 +111,30 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
         node_info node = G.getNode(dest);
         shortestPath.add(node);
         while (node != G.getNode(src)) {
-            node = parent.get(node);
+            node = parent.get(node.getKey());
             shortestPath.add(node);
         }
         Collections.reverse(shortestPath);
         return shortestPath;
     }
 
+    /*
+    save and load functions implemented using FileInputStream and FileOutputStream
+    if the file already exists -> replace it
+     */
     @Override
     public boolean save(String file) {
         try {
+            File saveFile = new File(file);
+            if (saveFile.exists())
+                //noinspection ResultOfMethodCallIgnored
+                saveFile.delete();
             FileOutputStream myGraph = new FileOutputStream(file);
             ObjectOutputStream gos = new ObjectOutputStream(myGraph);
             gos.writeObject(G);
             gos.close();
             myGraph.close();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -128,19 +144,25 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
     @Override
     public boolean load(String file) {
         try {
+            File saveFile = new File(file);
+            if (!saveFile.exists())
+                System.out.println("The file specified does not exist.");
             FileInputStream myGraph = new FileInputStream(file);
             ObjectInputStream gis = new ObjectInputStream(myGraph);
             init((weighted_graph) gis.readObject());
             gis.close();
             myGraph.close();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
         return true;
     }
 
+    /*
+    sets tags on every node on the graph to be infinity,
+    and each info field to be an empty string
+     */
     private void initDijkstra() {
         for (node_info n : G.getV()) {
             n.setTag(Double.POSITIVE_INFINITY);
@@ -148,47 +170,20 @@ public class WGraph_Algo implements weighted_graph_algorithms, Serializable {
         }
     }
 
-    /*private List<node_info> Dijkstra(node_info src, node_info dest) {
-        src.setTag(0);
-        HashMap<node_info, node_info> parent = new HashMap<node_info, node_info>();
-        for (node_info node : G.getV()) {
-            for (node_info neighbor : G.getV(node.getKey())) {
-                if (neighbor.getInfo() == "Visited")
-                    continue;
-                double edgeWeight = G.getEdge(node.getKey(), neighbor.getKey());
-                double nodeWeight = node.getTag();
-                if (nodeWeight + edgeWeight < neighbor.getTag()) {
-                    neighbor.setTag(nodeWeight + edgeWeight);
-                    parent.put(neighbor, node);
-                }
-            }
-            node.setInfo("Visited");
-            if (dest.getInfo() == "Visited")
-                break;
-        }
-
-        List<node_info> shortestPath = new ArrayList<node_info>();
-        node_info node = dest;
-        shortestPath.add(node);
-        while (node != src) {
-            node = parent.get(node);
-            shortestPath.add(node);
-        }
-        Collections.reverse(shortestPath);
-        return shortestPath;
-    }*/
-
+    /*
+    initialize tags on all nodes to MAX_VALUE
+     */
     private void initBFS() {
-        // initialize tags on all nodes to MAX_VALUE
         for (node_info n : G.getV())
             n.setTag(Double.MAX_VALUE);
     }
 
+    /*
+    this function implements the BFS algorithm on the entire graph (without a destination)
+    it is used as a way to check if the graph is connected
+    */
     private void bfs() {
-        /*
-        this function implements the BFS algorithm on the entire graph (without a destination)
-        it is used as a way to check if the graph is connected
-         */
+
         Queue<node_info> q = new LinkedList<>();
         int level = 0;
         initBFS();

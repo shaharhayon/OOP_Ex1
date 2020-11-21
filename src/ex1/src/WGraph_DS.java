@@ -1,14 +1,15 @@
-package ex1;
+package ex1.src;
 
 import java.io.Serializable;
 import java.util.*;
 
 public class WGraph_DS implements weighted_graph, Serializable {
-    int id = 0, MC = 0, edges = 0;
-    private HashMap<Integer, node_info> nodes_list = new HashMap<Integer, node_info>();
-    private HashMap<Integer, HashMap<node_info, Double>> neighbors = new HashMap<Integer, HashMap<node_info, Double>>();
+    private int id = 0, MC = 0, edges = 0;
+    private final HashMap<Integer, node_info> nodes_list = new HashMap<>(); // list of all the nodes in the graph
+    private final HashMap<Integer, HashMap<Integer, Double>> neighbors = new HashMap<>(); // list of all the neighbors in the graph
 
 
+    // class that represents the type node in a graph
     private class NodeData implements node_info, Serializable {
         int key;
         double tag;
@@ -21,7 +22,7 @@ public class WGraph_DS implements weighted_graph, Serializable {
             this.key = id;
             id++;
             this.tag = 0;
-            this.info = new String();
+            this.info = "";
         }
 
         /*
@@ -78,7 +79,13 @@ public class WGraph_DS implements weighted_graph, Serializable {
 
         @Override
         public int hashCode() {
-            return this.key % 50;
+            int result;
+            long temp;
+            result = key;
+            temp = Double.doubleToLongBits(tag);
+            result = 31 * result + (int) (temp ^ (temp >>> 32));
+            result = 31 * result + info.hashCode();
+            return result;
         }
     }
 
@@ -92,9 +99,9 @@ public class WGraph_DS implements weighted_graph, Serializable {
     @Override
     public String toString() {
         String s = "WGraph_DS: Nodes #: " + nodeSize() + ", MC: " + MC + ", Edges: " + edges + "\n";
-        for (node_info node : nodes_list.values()) {
+        for (node_info node : getV()) {
             s += node + " Neighbors: {";
-            for (node_info neighbor : neighbors.get(node.getKey()).keySet())
+            for (node_info neighbor : getV(node.getKey()))
                 s += " Node #: " + neighbor.getKey() + " Weight: " + getEdge(node.getKey(), neighbor.getKey()) + ",";
             s += "}\n";
             //+ neighbors.get(node.getKey()).keySet() + "}\n";
@@ -103,12 +110,11 @@ public class WGraph_DS implements weighted_graph, Serializable {
         return s;
     }
 
-    // checks if node2 is on the neighbor list of node1.
-    // if true returns true, else returns false.
     @Override
     public boolean hasEdge(int node1, int node2) {
-        node_info nodeB = nodes_list.get(node2);
-        if (this.neighbors.get(node1).containsKey(nodeB))
+        if (getNode(node1) == getNode(node2))
+            return true;
+        if (getV(node1).contains(getNode(node2)))
             return true;
         else
             return false;
@@ -117,30 +123,37 @@ public class WGraph_DS implements weighted_graph, Serializable {
     @Override
     public double getEdge(int node1, int node2) {
         if (hasEdge(node1, node2))
-            return this.neighbors.get(node1).get(getNode(node2));
+            return this.neighbors.get(node1).get(node2);
         else
             return -1;
     }
 
+    /*
+    checks if the node already exists, if true -> do nothing
+    if false -> adds the node to the graph's nodes list and create an entry for it in neighbors list
+     */
     @Override
     public void addNode(int key) {
-        if (this.nodes_list.containsKey(key))
+        if (getV().contains(getNode(key)))
             return;
         this.nodes_list.put(key, new NodeData());
-        this.neighbors.put(key, new HashMap<node_info, Double>());
+        this.neighbors.put(key, new HashMap<>());
         MC++;
     }
 
+    /*
+    if either node are null (doesnt exist on the graph) -> do nothing
+    else add each node to the others neighbors list
+     */
     @Override
     public void connect(int node1, int node2, double w) {
         if (this.nodes_list.get(node1) == null ||
                 this.nodes_list.get(node2) == null ||
                 hasEdge(node1, node2)) {
-            //System.out.println("One of the nodes does not exist.");
             return;
         }
-        this.neighbors.get(node1).put(getNode(node2), w);
-        this.neighbors.get(node2).put(getNode(node1), w);
+        this.neighbors.get(node1).put(node2, w);
+        this.neighbors.get(node2).put(node1, w);
         edges++;
         MC++;
     }
@@ -152,9 +165,17 @@ public class WGraph_DS implements weighted_graph, Serializable {
 
     @Override
     public Collection<node_info> getV(int node_id) {
-        return this.neighbors.get(node_id).keySet();
+        ArrayList<node_info> list = new ArrayList<>();
+        for (int nodeKey : this.neighbors.get(node_id).keySet())
+            list.add(getNode(nodeKey));
+        return list;
     }
 
+    /*
+    if the node doesnt exist -> return null as nothing was removed
+    else iterates through all the nodes in the graph, and remove the selected node from all neighbors list's
+    then removes the node from the graph's nodes list and returns the removed node
+     */
     @Override
     public node_info removeNode(int key) {
         if (getNode(key) == null)
@@ -172,11 +193,15 @@ public class WGraph_DS implements weighted_graph, Serializable {
         return removedNode;
     }
 
+    /*
+    if the edge doesnt exist -> do nothing
+    else remove the edge
+     */
     @Override
     public void removeEdge(int node1, int node2) {
         if (hasEdge(node1, node2)) {
-            this.neighbors.get(node1).remove(getNode(node2));
-            this.neighbors.get(node2).remove(getNode(node1));
+            this.neighbors.get(node1).remove(node2);
+            this.neighbors.get(node2).remove(node1);
             edges--;
             MC++;
         }
