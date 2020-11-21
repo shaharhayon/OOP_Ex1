@@ -1,7 +1,8 @@
 //package ex1;
-import ex1.*;
+import ex1.src.WGraph_DS;
+import ex1.src.node_info;
+import ex1.src.weighted_graph;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 
 import java.util.Arrays;
 import java.util.Collection;

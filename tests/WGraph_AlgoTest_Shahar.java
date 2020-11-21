@@ -1,6 +1,5 @@
-import ex1.*;
+import ex1.src.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,13 +99,13 @@ class WGraph_AlgoTest_Shahar {
 
     @Test
     void save() {
-        assertTrue(wga.save("saveTest"));
+        assertTrue(wga.save("saveTest.ser"));
     }
 
     @Test
     void load() {
         assertAll(
-                () -> wga.load("saveTest"),
+                () -> wga.load("saveTest.ser"),
                 () -> assertEquals(wga.getGraph(), g)
         );
     }
